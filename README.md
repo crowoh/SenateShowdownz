@@ -1,3 +1,5 @@
 # SenateTakedownz
- Directory database website that shows a visual representation of all of the senators within the U.S. government, and creates a subvisual directory that has a list of names and orgnizations that have funded them for lobbyism purposes. 
+I believe that public information should be viewed information. I wanted to create a website directory that shows an accurate visual representation of the names and organizations that have funded our congressmen for lobbyism purposes. 
 Purely for educational and recreational purposes.
+
+Creates an easily accessible visual breakdown of all contributors tied to each senator, along with graphs and personal links to their contact info. 
