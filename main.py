@@ -12,7 +12,7 @@ def main():
                 if xml_data:
                     senator_data = data_processor.process_opensecrets_data(xml_data)
                     senator_name = legislator.get('firstlast')
-                    print(f"{senator_name}: {senator_data}")
+                    print(f"{senator_name}: {senator_data}") #Print something else than senator_data, print the biggest organization.
             else:
                 print("CID not found in legislator element")
 
