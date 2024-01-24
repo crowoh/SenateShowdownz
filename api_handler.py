@@ -3,8 +3,8 @@ import xml.etree.ElementTree as ET
 
 API_KEY = '584e0b053a1b80a1059d31bc5bd12309'  # Replace with your valid API key
 
-def get_legislators():
-    url = f"http://www.opensecrets.org/api/?method=getLegislators&id=NJ&apikey={API_KEY}&output=xml"
+def get_legislators(state):
+    url = f"http://www.opensecrets.org/api/?method=getLegislators&id={state}&apikey={API_KEY}&output=xml"
     response = requests.get(url)
     if response.status_code == 200:
         try:
