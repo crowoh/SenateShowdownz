@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senator Contributions</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #212529;
+        }
+        .container {
+            max-width: 1140px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        header {
+            background: #000000; /* Black color for the header */
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .state-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .state-selector select {
+            padding: 5px 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .senator {
+            background: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        .senator:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .senator h2 {
+            color: #007bff;
+            margin-top: 0;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+        .senator-details {
+            display: none;
+            margin-top: 15px;
+        }
+        .senator p {
+            margin: 10px 0;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        .senator p strong {
+            font-weight: bold;
+        }
+        .amount {
+            font-weight: bold;
+            color: #28a745; /* Green color for dollar amounts */
+        }
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .senator h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Senator Contributions</h1>
+    </header>
+    <div class="state-selector">
+        <select id="stateSelect" onchange="location = this.value;">
+            <option value="">Select a State</option>
+            <option value="?state=AL">Alabama</option>
+            <option value="?state=AK">Alaska</option>
+            <option value="?state=AZ">Arizona</option>
+            <option value="?state=AR">Arkansas</option>
+            <option value="?state=CA">California</option>
+            <option value="?state=CO">Colorado</option>
+            <option value="?state=CT">Connecticut</option>
+            <option value="?state=DE">Delaware</option>
+            <option value="?state=FL">Florida</option>
+            <option value="?state=GA">Georgia</option>
+            <option value="?state=HI">Hawaii</option>
+            <option value="?state=ID">Idaho</option>
+            <option value="?state=IL">Illinois</option>
+            <option value="?state=IN">Indiana</option>
+            <option value="?state=IA">Iowa</option>
+            <option value="?state=KS">Kansas</option>
+            <option value="?state=KY">Kentucky</option>
+            <option value="?state=LA">Louisiana</option>
+            <option value="?state=ME">Maine</option>
+            <option value="?state=MD">Maryland</option>
+            <option value="?state=MA">Massachusetts</option>
+            <option value="?state=MI">Michigan</option>
+            <option value="?state=MN">Minnesota</option>
+            <option value="?state=MS">Mississippi</option>
+            <option value="?state=MO">Missouri</option>
+            <option value="?state=MT">Montana</option>
+            <option value="?state=NE">Nebraska</option>
+            <option value="?state=NV">Nevada</option>
+            <option value="?state=NH">New Hampshire</option>
+            <option value="?state=NJ">New Jersey</option>
+            <option value="?state=NM">New Mexico</option>
+            <option value="?state=NY">New York</option>
+            <option value="?state=NC">North Carolina</option>
+            <option value="?state=ND">North Dakota</option>
+            <option value="?state=OH">Ohio</option>
+            <option value="?state=OK">Oklahoma</option>
+            <option value="?state=OR">Oregon</option>
+            <option value="?state=PA">Pennsylvania</option>
+            <option value="?state=RI">Rhode Island</option>
+            <option value="?state=SC">South Carolina</option>
+            <option value="?state=SD">South Dakota</option>
+            <option value="?state=TN">Tennessee</option>
+            <option value="?state=TX">Texas</option>
+            <option value="?state=UT">Utah</option>
+            <option value="?state=VT">Vermont</option>
+            <option value="?state=VA">Virginia</option>
+            <option value="?state=WA">Washington</option>
+            <option value="?state=WV">West Virginia</option>
+            <option value="?state=WI">Wisconsin</option>
+            <option value="?state=WY">Wyoming</option>
+        </select>
+    </div>
+    <div class="container">
+        {% for name, data in legislators.items() %}
+        <div class="senator">
+            <h2 onclick="toggleDetails(this)">{{ name }}</h2>
+            <div class="senator-details">
+                <p><strong>Contributions:</strong> {{ data.contributions }}</p>
+                <p><strong>Top Contributors:</strong><br>
+                    {% for contributor in data.contributors.split('\n') %}
+                        {{ contributor|safe }}<br>
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function toggleDetails(element) {
+            var details = element.nextElementSibling;
+            if (details.style.display === 'block') {
+                details.style.display = 'none';
+            } else {
+                details.style.display = 'block';
+            }
+        }
+
+        function changeState() {
+            var selectedState = document.getElementById('stateSelect').value;
+            window.location.href = selectedState;
+        }
+
+    </script>
+</body>
+</html>

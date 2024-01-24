@@ -3,33 +3,10 @@ import data_processor
 import time
 
 # Add a variable to specify the state
-state_to_process = "AZ"  # Change this to the state abbreviation you want to process
-
-def format_contributors(contributors, max_contributors=5): 
-    formatted_list = []  ## max_contributors = amount of contributors shown
-    count = 0
-    index = 0
-
-    while count < max_contributors and index < len(contributors):
-        contributor = contributors[index]
-        index += 1
-
-        org_name = contributor.get('org_name')
-        total = contributor.get('total')
-        if org_name and total:
-            formatted_list.append(f"{org_name}: ${total}")
-            count += 1
-
-    total_contributions = "Total Contributions: $" + contributors[0].get('total') if contributors else "No contributor data available"
-    formatted_list.insert(0, total_contributions)  # Insert Total Contributions line
-
-    contributors_list = formatted_list[1:]  # Exclude the Total Contributions line
-    top_contributors = "\n".join(contributors_list)  # Join the contributors with newlines
-
-    return top_contributors
+state_to_process = "CA"  # Change this to the state abbreviation you want to process
 
 def main():
-    max_legislators_to_process = 20 #Max Legislators to process 
+    max_legislators_to_process = 20  # Max Legislators to process
     processed_legislators_count = 0
 
     try:
@@ -58,7 +35,7 @@ def main():
                         contrib_xml_data = api_handler.get_cand_contrib_data(cid, "2020")
                         if contrib_xml_data:
                             contributors = contrib_xml_data.findall('.//contributor')
-                            formatted_contributors = format_contributors(contributors)
+                            formatted_contributors = data_processor.format_contributors(contributors)
                             print(f"{senator_name}: {formatted_contributions}. \n\u001b[1mTop Contributors:\u001b[0m\n{formatted_contributors}")
                         else:
                             print(f"{senator_name}: No contributor data available")

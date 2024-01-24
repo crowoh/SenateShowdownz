@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import api_handler
 import data_processor
 
@@ -6,17 +6,30 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    committee_names_data = api_handler.get_committee_names()
-    all_senators_data = {}
-    if committee_names_data:
-        for committee in committee_names_data.get('results', []):
-            cid = committee.get('id')
+    state_to_process = request.args.get('state', 'CA')  # Default to 'AZ' if no state is provided
+    legislators_data = {}
+    legislators_xml = api_handler.get_legislators(state_to_process)
+    if legislators_xml:
+        legislators = legislators_xml.findall(".//legislator")[:10]  # Process only first 10 legislators for simplicity
+        for legislator in legislators:
+            cid = legislator.get('cid')
+            senator_name = legislator.get('firstlast')
             if cid:
-                xml_data = api_handler.get_opensecrets_data(cid, "2020")
-                if xml_data:
-                    senator_data = data_processor.process_opensecrets_data(xml_data)
-                    all_senators_data.update(senator_data)
-    return render_template('index.html', data=all_senators_data)
+                industry_xml_data = api_handler.get_opensecrets_data(cid, "2020")
+                formatted_contributions = data_processor.process_opensecrets_data(industry_xml_data) if industry_xml_data else "No industry data available"
+                contrib_xml_data = api_handler.get_cand_contrib_data(cid, "2020")
+                if contrib_xml_data:
+                    contributors = contrib_xml_data.findall('.//contributor')
+                    formatted_contributors = data_processor.format_contributors(contributors)
+                else:
+                    formatted_contributors = "No contributor data available"
+
+                legislators_data[senator_name] = {
+                    "contributions": formatted_contributions,
+                    "contributors": formatted_contributors
+                }
+
+    return render_template('index.html', legislators=legislators_data)
 
 if __name__ == '__main__':
     app.run(debug=True)
