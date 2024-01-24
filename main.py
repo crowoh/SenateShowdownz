@@ -3,10 +3,10 @@ import data_processor
 import time
 
 # Add a variable to specify the state
-state_to_process = "CA"  # Change this to the state abbreviation you want to process
+state_to_process = "AZ"  # Change this to the state abbreviation you want to process
 
-def format_contributors(contributors, max_contributors=5): # max_contributors = amount of contributors shown
-    formatted_list = []
+def format_contributors(contributors, max_contributors=5): 
+    formatted_list = []  ## max_contributors = amount of contributors shown
     count = 0
     index = 0
 
