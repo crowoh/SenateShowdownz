@@ -21,6 +21,9 @@ def make_request(url):
         response = requests.get(url)
         if response.status_code == 200:
             return ET.fromstring(response.content)
+        elif response.status_code == 404:
+            print(f"Resource not found for URL: {url}")
+            return None  # Skip further processing for this URL
         else:
             print(f"Failed to fetch data: {response.status_code}, {response.text}")
             return None

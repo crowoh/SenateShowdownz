@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Senator Contributions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212; /* Dark background for the body */
+            color: #fff; /* White text color */
             margin: 0;
             padding: 0;
-            color: #212529;
         }
         .container {
             max-width: 1140px;
@@ -18,58 +19,66 @@
             padding: 20px;
         }
         header {
-            background: #000000; /* Black color for the header */
-            color: white;
-            padding: 15px 0;
+            background: #1c1c1c; /* Slightly lighter black for the header */
+            padding: 20px 0;
             text-align: center;
-            margin-bottom: 30px;
         }
         h1 {
+            color: #ffffff; /* Bootstrap blue for the title */
+            font-size: 2.8rem;
             margin: 0;
-            font-size: 2.5rem;
         }
         .state-selector {
             text-align: center;
-            margin-bottom: 20px;
+            margin: 25px 0;
         }
         .state-selector select {
-            padding: 5px 10px;
-            font-size: 1rem;
+            padding: 10px 20px;
+            font-size: 1.1rem;
             border-radius: 5px;
-            border: 1px solid #ddd;
+            border: none; /* No border */
+            background-color: #333;
+            color: #fff; /* White text color */
+            cursor: pointer;
+            outline: none;
         }
         .senator {
-            background: #ffffff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s ease;
+            background: #333; /* Card background */
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
         .senator:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background: #10223c; /* Hover color change */
+            transform: translateY(-10px);
         }
         .senator h2 {
-            color: #007bff;
-            margin-top: 0;
-            font-size: 1.8rem;
+            font-size: 1.9rem;
             cursor: pointer;
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+        .senator h2:hover {
+            color: #fff; /* Text color on hover */
         }
         .senator-details {
             display: none;
             margin-top: 15px;
+            line-height: 1.7;
+            color: #adb5bd; /* Gray text for details */
         }
         .senator p {
             margin: 10px 0;
-            line-height: 1.6;
             font-size: 1.1rem;
         }
         .senator p strong {
-            font-weight: bold;
+            font-weight: 700;
+            color: #fff; /* White text for strong elements */
         }
         .amount {
-            font-weight: bold;
-            color: #28a745; /* Green color for dollar amounts */
+            font-weight: 700;
+            color: #20c997; /* Mint green color for amounts */
         }
         @media (max-width: 768px) {
             .container {
@@ -77,11 +86,24 @@
                 padding: 15px;
             }
             h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             .senator h2 {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
             }
+        }
+        /* Adding a loading animation for images */
+        @keyframes loadingAnimation {
+            0% { background-color: #333; }
+            50% { background-color: #464646; }
+            100% { background-color: #333; }
+        }
+        .loading-image {
+            display: block;
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            animation: loadingAnimation 1.5s infinite;
         }
     </style>
 </head>
@@ -154,6 +176,7 @@
                 <p><strong>First Elected:</strong> {{ data.first_elected }}</p>
                 <p><strong>Phone:</strong> {{ data.phone }}</p>
                 <p><strong>Website:</strong> <a href="{{ data.website }}">{{ data.website }}</a></p>
+                <p><strong>Webform:</strong> <a href="{{ data.webform }}">{{ data.webform }}</a></p>
                 <p><strong>Contributions:</strong> {{ data.contributions }}</p>
                 <p><strong>Top Contributors:</strong><br>
                     {% for contributor in data.contributors.split('\n') %}
