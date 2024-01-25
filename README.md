@@ -1,4 +1,4 @@
-# SenateTakedownz
+# SenateShowdownz
 A Website that displays all of the names and organizations that have funded our congressmen in relation to each other, and other general information for each representative.
 
 
