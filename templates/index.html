@@ -149,6 +149,11 @@
         <div class="senator">
             <h2 onclick="toggleDetails(this)">{{ name }}</h2>
             <div class="senator-details">
+                <p><strong>Party:</strong> {{ data.party }}</p>
+                <p><strong>Office:</strong> {{ data.congress_office }}</p>
+                <p><strong>First Elected:</strong> {{ data.first_elected }}</p>
+                <p><strong>Phone:</strong> {{ data.phone }}</p>
+                <p><strong>Website:</strong> <a href="{{ data.website }}">{{ data.website }}</a></p>
                 <p><strong>Contributions:</strong> {{ data.contributions }}</p>
                 <p><strong>Top Contributors:</strong><br>
                     {% for contributor in data.contributors.split('\n') %}

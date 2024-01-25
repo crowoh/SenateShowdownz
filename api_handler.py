@@ -5,41 +5,22 @@ API_KEY = '584e0b053a1b80a1059d31bc5bd12309'  # Replace with your valid API key
 
 def get_legislators(state):
     url = f"http://www.opensecrets.org/api/?method=getLegislators&id={state}&apikey={API_KEY}&output=xml"
-    response = requests.get(url)
-    if response.status_code == 200:
-        try:
-            return ET.fromstring(response.content)
-        except ET.ParseError:
-            print("Failed to parse XML")
-            return None
-    else:
-        print(f"Failed to fetch data: {response.status_code}, {response.text}")
-        return None
+    return make_request(url)
 
 def get_opensecrets_data(candidate_id, cycle):
     url = f"https://www.opensecrets.org/api/?method=candIndustry&cid={candidate_id}&cycle={cycle}&apikey={API_KEY}&output=xml"
-    response = requests.get(url)
-    if response.status_code == 200:
-        try:
-            return ET.fromstring(response.content)
-        except ET.ParseError:
-            print("Failed to parse XML")
-            return None
-    else:
-        print(f"Failed to fetch data: {response.status_code}, {response.text}")
-        return None
+    return make_request(url)
 
-def get_cand_contrib_data(candidate_id, cycle='2020'):
+def get_cand_contrib_data(candidate_id, cycle):
     url = f"https://www.opensecrets.org/api/?method=candContrib&cid={candidate_id}&cycle={cycle}&apikey={API_KEY}&output=xml"
+    return make_request(url)
+
+
+def make_request(url):
     try:
         response = requests.get(url)
         if response.status_code == 200:
-            #print(response.content)  # Print the raw XML response for debugging
-            try:
-                return ET.fromstring(response.content)
-            except ET.ParseError:
-                print("Failed to parse XML")
-                return None
+            return ET.fromstring(response.content)
         else:
             print(f"Failed to fetch data: {response.status_code}, {response.text}")
             return None
