@@ -22,4 +22,4 @@ SenateShowdownz is designed with accessibility in mind. Simply select a state fr
 SenateShowdownz is intended for educational and recreational purposes only. The platform is a tool to display publicly available financial data related to political campaigns. We are committed to ensuring the accuracy and timeliness of the information provided but do not endorse any political views or campaigns.
 
 ## Contact
-For more information, suggestions, or inquiries, please contact me at [cooperrubens@gmail.com](mailto:cooperrubens@gmail.com).
+For more information, suggestions, or inquiries, please contact me at [https://github.com/crowoh]
