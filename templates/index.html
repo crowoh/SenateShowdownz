@@ -92,6 +92,12 @@
                 font-size: 1.6rem;
             }
         }
+        .loading {
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.5rem;
+        }
         /* Adding a loading animation for images */
         @keyframes loadingAnimation {
             0% { background-color: #333; }
@@ -105,6 +111,47 @@
             border-radius: 8px;
             animation: loadingAnimation 1.5s infinite;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #444;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #262626;
+        }
+
+        .expenditure-details td {
+            background-color: #1c1c1c;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin: 4px 0;
+            border: none;
+            border-radius: 4px;
+            background-color: #20c997;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            background-color: #17a589;
+        }
+
     </style>
 </head>
 <body>
@@ -166,6 +213,73 @@
             <option value="?state=WY">Wyoming</option>
         </select>
     </div>
+    <div class="container" id="dataContainer">
+        <div class="loading">Loading data, please wait...</div>
+    </div>
+
+    <script>
+        // JavaScript functions
+        function toggleDetails(element) {
+            var details = element.nextElementSibling;
+            if (details.style.display === 'block') {
+                details.style.display = 'none';
+            } else {
+                details.style.display = 'block';
+            }
+        }
+
+        async function fetchData(state) {
+            if (!state) return;
+            document.getElementById('dataContainer').innerHTML = '<div class="loading">Loading data, please wait...</div>';
+            try {
+                const response = await fetch(`/get-data?state=${state}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                displayData(data);
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        }
+
+        function displayData(data) {
+            const container = document.getElementById('dataContainer');
+            container.innerHTML = ''; // Clear previous data
+
+            data.forEach(senator => {
+                // Create senator div
+                const senatorDiv = document.createElement('div');
+                senatorDiv.classList.add('senator');
+
+                // Create and append the senator's name as a header
+                const nameHeader = document.createElement('h2');
+                nameHeader.textContent = senator.name;
+                nameHeader.onclick = function() { toggleDetails(this); };
+                senatorDiv.appendChild(nameHeader);
+
+                // Create and append senator details div
+                const detailsDiv = document.createElement('div');
+                detailsDiv.classList.add('senator-details');
+                detailsDiv.style.display = 'none'; // Initially hidden
+
+                // Populate the details div with senator information
+                detailsDiv.innerHTML = `
+            <p><strong>Party:</strong> ${senator.party}</p>
+            <p><strong>Office:</strong> ${senator.congress_office}</p>
+            <p><strong>First Elected:</strong> ${senator.first_elected}</p>
+            <p><strong>Phone:</strong> ${senator.phone}</p>
+            <p><strong>Website:</strong> <a href="${senator.website}">${senator.website}</a></p>
+            <p><strong>Webform:</strong> <a href="${senator.webform}">${senator.webform}</a></p>
+            <p><strong>Contributions:</strong> ${senator.contributions}</p>
+            <p><strong>Top Contributors:</strong><br>${senator.contributors.split('\n').join('<br>')}</p>
+        `;
+
+                senatorDiv.appendChild(detailsDiv);
+                container.appendChild(senatorDiv);
+            });
+        }
+    </script>
     <div class="container">
         {% for name, data in legislators.items() %}
         <div class="senator">
@@ -183,9 +297,58 @@
                         {{ contributor|safe }}<br>
                     {% endfor %}
                 </p>
+                <!-- Candidate Summary Button -->
+                
+                <button onclick="toggleSummaryDetails('summary-details-{{ loop.index }}')">Candidate Summary</button>
+                <!-- Candidate Summary Table -->
+                <div id="summary-details-{{ loop.index }}" class="candidate-summary" style="display: none;">
+                    <table>
+                        <tbody>
+                            <tr><td>Candidate:</td><td>{{ data.cand_summary.cand_name }}</td></tr>
+                            <tr><td>Cycle:</td><td>{{ data.cand_summary.cycle }}</td></tr>
+                            <tr><td>Total Raised:</td><td>${{ data.cand_summary.total }}</td></tr>
+                            <tr><td>Spent:</td><td>${{ data.cand_summary.spent }}</td></tr>
+                            <tr><td>Cash on Hand:</td><td>${{ data.cand_summary.cash_on_hand }}</td></tr>
+                            <tr><td>Debt:</td><td>${{ data.cand_summary.debt }}</td></tr>
+                            <tr><td>Last Updated:</td><td>{{ data.cand_summary.last_updated }}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         {% endfor %}
+        <div class="independent-expenditures">
+            <h2>Independent Expenditures</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Committee</th>
+                    <th>Supports/Opposes</th>
+                    <th>Amount</th>
+                    <th>Details</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for expenditure in independent_expenditures %}
+                <tr class="expenditure-summary">
+                    <td>{{ expenditure.pacshort }}</td>
+                    <td>{{ expenditure.suppopp }} {{ expenditure.candname }}</td>
+                    <td>${{ expenditure.amount }}</td>
+                    <td>
+                        <button onclick="toggleExpenditureDetails('details-{{ loop.index }}')">View Details</button>
+                    </td>
+                </tr>
+                <tr id="details-{{ loop.index }}" class="expenditure-details" style="display:none;">
+                    <td colspan="4">
+                        <p><strong>Payee:</strong> {{ expenditure.payee }}</p>
+                        <p><strong>Date:</strong> {{ expenditure.date }}</p>
+                        <p><strong>Note:</strong> {{ expenditure.note }}</p>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
@@ -197,6 +360,29 @@
                 details.style.display = 'block';
             }
         }
+
+        function toggleExpenditureDetails(detailId) {
+            var detailRow = document.getElementById(detailId);
+            var displayStatus = detailRow.style.display;
+            // Hide all detail rows first
+            document.querySelectorAll('.expenditure-details').forEach(function(detail) {
+                detail.style.display = 'none';
+            });
+            // Then toggle the clicked row if it was not already displayed
+            if (displayStatus === 'none' || displayStatus === '') {
+                detailRow.style.display = 'table-row';
+            }
+        }
+
+        function toggleSummaryDetails(detailId) {
+            var summaryDetails = document.getElementById(detailId);
+            if (summaryDetails.style.display === 'none') {
+                summaryDetails.style.display = 'block';
+            } else {
+        summaryDetails.style.display = 'none';
+            }
+        }
+
 
         function changeState() {
             var selectedState = document.getElementById('stateSelect').value;

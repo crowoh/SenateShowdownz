@@ -4,22 +4,26 @@ import data_processor
 
 app = Flask(__name__)
 
-# Set load_all_data to True to load all available data, even if some data is missing.
-# Set it to False to skip legislators with missing data.
-load_all_data = False  # Toggle this variable as needed
-
 @app.route('/')
 def index():
     state_to_process = request.args.get('state', 'CA')
     legislators_data = {}
     legislators_xml = api_handler.get_legislators(state_to_process)
-    
+    independent_expenditures = data_processor.process_independent_expenditures_data()
+
     if legislators_xml:
         legislators = legislators_xml.findall(".//legislator")[:10]
         for legislator in legislators:
             cid = legislator.get('cid')
             if not cid:
                 continue  # Skip if cid is not available
+
+            # Fetch and process candSummary data
+            cand_summary_xml_data = api_handler.get_cand_summary_data(cid)
+            formatted_cand_summary = {"error": "No summary data available"}  # Default value as a dictionary
+            if cand_summary_xml_data is not None:
+                formatted_cand_summary = data_processor.process_cand_summary_data(cand_summary_xml_data)
+                # Ensure the formatted_cand_summary is a dictionary or convert it if necessary
 
             senator_name = legislator.get('firstlast')
             party = legislator.get('party', 'N/A')
@@ -30,9 +34,6 @@ def index():
             webform = legislator.get('webform', 'N/A')
 
             industry_xml_data = api_handler.get_opensecrets_data(cid, "2020")
-            if not load_all_data and not industry_xml_data:
-                continue  # Skip this legislator if essential data is missing and load_all_data is False
-
             formatted_contributions = "No industry data available"
             if industry_xml_data:
                 formatted_contributions = data_processor.process_opensecrets_data(industry_xml_data)
@@ -50,10 +51,11 @@ def index():
                 "website": website,
                 "webform": webform,
                 "contributions": formatted_contributions,
-                "contributors": formatted_contributors
+                "contributors": formatted_contributors,
+                "cand_summary": formatted_cand_summary  # Ensure this key is always present
             }
 
-    return render_template('index.html', legislators=legislators_data)
+    return render_template('index.html', legislators=legislators_data, independent_expenditures=independent_expenditures)
 
 if __name__ == '__main__':
     app.run(debug=True)
