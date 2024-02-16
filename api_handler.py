@@ -24,6 +24,10 @@ def get_cand_summary_data(candidate_id, cycle=''):
     url = f"https://www.opensecrets.org/api/?method=candSummary&cid={candidate_id}&cycle={cycle}&apikey={API_KEY}&output=xml"
     return make_request(url)
 
+def get_cand_sector_data(candidate_id, cycle):
+    url = f"https://www.opensecrets.org/api/?method=candSector&cid={candidate_id}&cycle={cycle}&apikey={API_KEY}&output=xml"
+    return make_request(url)
+
 
 def make_request(url):
     try:

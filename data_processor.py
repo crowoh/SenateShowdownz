@@ -39,7 +39,7 @@ def process_cand_contrib_data(xml_data):
     formatted_contributors = '\n'.join(contributors) if contributors else "No contributor data available"
     return formatted_contributors
 
-def format_contributors(contributors, max_contributors=5):
+def format_contributors(contributors, max_contributors=5): # Change this to make more contributors show up for each legislator
     formatted_list = []
     count = 0
     index = 0
@@ -122,4 +122,26 @@ def process_cand_summary_data(xml_data):
     }
 
     return cand_summary
+
+def process_cand_sector_data(xml_data):
+    if xml_data is None:
+        return {"error": "No sector data available"}
+
+    sectors_list = []
+    for sector in xml_data.findall('.//sector'):
+        sector_name = sector.get('sector_name')
+        sector_id = sector.get('sectorid')
+        indivs = sector.get('indivs')
+        pacs = sector.get('pacs')
+        total = sector.get('total')
+        sectors_list.append({
+            'sector_name': sector_name,
+            'sector_id': sector_id,
+            'indivs': indivs,
+            'pacs': pacs,
+            'total': total
+        })
+
+    return sectors_list
+
 

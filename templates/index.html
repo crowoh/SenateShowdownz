@@ -314,6 +314,34 @@
                         </tbody>
                     </table>
                 </div>
+                <button onclick="toggleSectorDetails('sector-details-{{ loop.index }}')">Sector Contributions</button>
+                <!-- Sector Contributions Table -->
+                <div id="sector-details-{{ loop.index }}" class="sector-summary" style="display: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sector Name</th>
+                                <th>Individuals</th>
+                                <th>PACs</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if data.sectors %}
+                                {% for sector in data.sectors %}
+                                <tr>
+                                    <td>{{ sector.sector_name }}</td>
+                                    <td>${{ sector.indivs }}</td>
+                                    <td>${{ sector.pacs }}</td>
+                                    <td>${{ sector.total }}</td>
+                               </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="4">No sector data available.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         {% endfor %}
@@ -382,6 +410,16 @@
         summaryDetails.style.display = 'none';
             }
         }
+
+        function toggleSectorDetails(detailId) {
+            var sectorDetails = document.getElementById(detailId);
+            if (sectorDetails.style.display === 'none') {
+                sectorDetails.style.display = 'block';
+            } else {
+                sectorDetails.style.display = 'none';
+            }
+        }
+
 
 
         function changeState() {
