@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Senator Contributions</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -19,14 +20,15 @@
             padding: 20px;
         }
         header {
-            background: #1c1c1c; /* Slightly lighter black for the header */
+            background: linear-gradient(135deg, #2C5364, #203A43, #0F2027);
             padding: 20px 0;
             text-align: center;
+            color: #ffffff;
         }
         h1 {
-            color: #ffffff; /* Bootstrap blue for the title */
-            font-size: 2.8rem;
             margin: 0;
+            font-weight: 700;
+            font-size: 2.8rem;
         }
         .state-selector {
             text-align: center;
@@ -36,122 +38,90 @@
             padding: 10px 20px;
             font-size: 1.1rem;
             border-radius: 5px;
-            border: none; /* No border */
+            border: 2px solid #20c997; /* Mint green color for the border */
             background-color: #333;
             color: #fff; /* White text color */
             cursor: pointer;
             outline: none;
+            transition: all 0.3s ease-in-out;
+        }
+        .state-selector select:hover {
+            border-color: #17a589;
+            background-color: #2C5364;
         }
         .senator {
             background: #333; /* Card background */
             padding: 25px;
             margin-bottom: 25px;
             border-radius: 8px;
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
         .senator:hover {
-            background: #10223c; /* Hover color change */
-            transform: translateY(-10px);
+            transform: scale(1.03);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            background: #2C5364; /* Darker shade for hover */
         }
         .senator h2 {
             font-size: 1.9rem;
-            cursor: pointer;
+            color: #20c997; /* Mint green color for the title */
             margin-bottom: 15px;
-            transition: color 0.3s ease;
         }
-        .senator h2:hover {
-            color: #fff; /* Text color on hover */
+        .senator-details, .loading, table, th, td, button {
+            transition: all 0.3s ease;
+            border-radius: 4px;
         }
         .senator-details {
-            display: none;
-            margin-top: 15px;
-            line-height: 1.7;
-            color: #adb5bd; /* Gray text for details */
+            background-color: #252525; /* Slightly lighter background for details */
+            padding: 15px;
+            margin-top: 20px;
+            display: none; /* Initially hidden */
+            line-height: 1.6;
+            color: #adb5bd; /* Grey text for details */
         }
-        .senator p {
-            margin: 10px 0;
-            font-size: 1.1rem;
+        .loading {
+            font-size: 1.5rem;
         }
-        .senator p strong {
-            font-weight: 700;
-            color: #fff; /* White text for strong elements */
+        table {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #333;
+            border-collapse: collapse;
         }
-        .amount {
-            font-weight: 700;
-            color: #20c997; /* Mint green color for amounts */
+        th, td {
+            text-align: left;
+            padding: 12px;
+            color: #fff;
+        }
+        th {
+            background-color: #20c997; /* Mint green background for header */
+        }
+        tr:nth-child(even) {
+            background-color: #2C5364; /* Alternating row color */
+        }
+        button {
+            background-color: #20c997; /* Mint green background */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #17a589;
         }
         @media (max-width: 768px) {
-            .container {
+            .container, h1 {
                 width: 95%;
                 padding: 15px;
             }
             h1 {
-                font-size: 2.2rem;
-            }
-            .senator h2 {
-                font-size: 1.6rem;
+                font-size: 2rem;
             }
         }
-        .loading {
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-            font-size: 1.5rem;
-        }
-        /* Adding a loading animation for images */
-        @keyframes loadingAnimation {
-            0% { background-color: #333; }
-            50% { background-color: #464646; }
-            100% { background-color: #333; }
-        }
-        .loading-image {
-            display: block;
-            width: 100%;
-            height: 200px;
-            border-radius: 8px;
-            animation: loadingAnimation 1.5s infinite;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 12px;
-            border: 1px solid #444;
-            text-align: left;
-        }
-
-        th {
-            background-color: #333;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #262626;
-        }
-
-        .expenditure-details td {
-            background-color: #1c1c1c;
-        }
-
-        button {
-            padding: 8px 16px;
-            margin: 4px 0;
-            border: none;
-            border-radius: 4px;
-            background-color: #20c997;
-            color: white;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        button:hover {
-            background-color: #17a589;
-        }
-
     </style>
 </head>
 <body>
@@ -319,28 +289,105 @@
                 <div id="sector-details-{{ loop.index }}" class="sector-summary" style="display: none;">
                     <table>
                         <thead>
-                            <tr>
-                                <th>Sector Name</th>
-                                <th>Individuals</th>
-                                <th>PACs</th>
-                                <th>Total</th>
-                            </tr>
+                        <tr>
+                            <th>Sector Name</th>
+                            <th>Individuals</th>
+                            <th>PACs</th>
+                            <th>Total</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {% if data.sectors %}
-                                {% for sector in data.sectors %}
+                        {% if data.sectors %}
+                            {% for sector in data.sectors %}
                                 <tr>
                                     <td>{{ sector.sector_name }}</td>
                                     <td>${{ sector.indivs }}</td>
                                     <td>${{ sector.pacs }}</td>
                                     <td>${{ sector.total }}</td>
-                               </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr><td colspan="4">No sector data available.</td></tr>
-                            {% endif %}
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="4">No sector data available.</td></tr>
+                        {% endif %}
                         </tbody>
                     </table>
+                </div>
+                <!-- Financial Profile Table -->
+                <button onclick="toggleFinancialDetails('financial-details-{{ loop.index }}')">Personal Financial Profile</button>
+                <!-- Financial Profile Table -->
+                <div id="financial-details-{{ loop.index }}" class="financial-summary" style="display: none;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Detail</th>
+                            <th>Information</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr><td>Name</td><td>{{ data.memPFDprofile.name }}</td></tr>
+                        <tr><td>Net Worth Low</td><td>${{ data.memPFDprofile.net_low | default('N/A') }}</td></tr>
+                        <tr><td>Net Worth High</td><td>${{ data.memPFDprofile.net_high | default('N/A') }}</td></tr>
+                        <tr><td>Positions Held Count</td><td>{{ data.memPFDprofile.positions_held_count }}</td></tr>
+                        <tr><td>Asset Count</td><td>{{ data.memPFDprofile.asset_count }}</td></tr>
+                        <tr><td>Asset Value Low</td><td>${{ data.memPFDprofile.asset_low | default('N/A') }}</td></tr>
+                        <tr><td>Asset Value High</td><td>${{ data.memPFDprofile.asset_high | default('N/A') }}</td></tr>
+                        <tr><td>Transaction Count</td><td>{{ data.memPFDprofile.transaction_count }}</td></tr>
+                        </tbody>
+                    </table>
+                    <!-- Assets Button -->
+                    <button onclick="toggleAssets('assets-details-{{ loop.index }}')">Assets</button>
+                    <!-- Assets Details Table -->
+                    <div id="assets-details-{{ loop.index }}" class="assets-details" style="display: none;">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Asset Name</th>
+                                <th>Holdings Low</th>
+                                <th>Holdings High</th>
+                                <th>Industry</th>
+                                <th>Sector</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for asset in data.memPFDprofile.assets %}
+                                <tr>
+                                    <td>{{ asset.name }}</td>
+                                    <td>${{ asset.holdings_low }}</td>
+                                    <td>${{ asset.holdings_high }}</td>
+                                    <td>{{ asset.industry }}</td>
+                                    <td>{{ asset.sector }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Transactions Button -->
+                    <button onclick="toggleTransactions('transactions-details-{{ loop.index }}')">Transactions</button>
+                    <!-- Transactions Details Table -->
+                    <div id="transactions-details-{{ loop.index }}" class="transactions-details" style="display: none;">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Asset Name</th>
+                                <th>Transaction Date</th>
+                                <th>Action</th>
+                                <th>Value Low</th>
+                                <th>Value High</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for transaction in data.memPFDprofile.transactions %}
+                                <tr>
+                                    <td>{{ transaction.asset_name }}</td>
+                                    <td>{{ transaction.tx_date }}</td>
+                                    <td>{{ transaction.tx_action }}</td>
+                                    <td>${{ transaction.value_low }}</td>
+                                    <td>${{ transaction.value_high }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -420,6 +467,25 @@
             }
         }
 
+
+        function toggleFinancialDetails(detailId) {
+            var detailDiv = document.getElementById(detailId);
+            if (detailDiv.style.display === 'none') {
+                detailDiv.style.display = 'block';
+            } else {
+                detailDiv.style.display = 'none';
+            }
+        }
+
+        function toggleAssets(detailId) {
+            var assetsDetails = document.getElementById(detailId);
+            assetsDetails.style.display = assetsDetails.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleTransactions(detailId) {
+            var transactionsDetails = document.getElementById(detailId);
+            transactionsDetails.style.display = transactionsDetails.style.display === 'none' ? 'block' : 'none';
+        }
 
 
         function changeState() {

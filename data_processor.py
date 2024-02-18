@@ -1,20 +1,33 @@
 import xml.etree.ElementTree as ET
-from api_handler import get_independent_expenditures   # Ensure api_handler.py is in the same directory or adjust the import path
+from api_handler import (
+    get_legislators, get_opensecrets_data, get_cand_contrib_data,
+    get_independent_expenditures, get_cand_summary_data,
+    get_cand_sector_data, get_memPFDprofile
+)   # Ensure api_handler.py is in the same directory or adjust the import path
+
+def safe_int(value, default=0):
+    """Safely convert the input value to an integer, handling exceptions."""
+    try:
+        return int(value.replace(',', ''))
+    except ValueError:
+        return default
 
 def process_opensecrets_data(xml_data):
-    total_contributions = sum(int(industry.get('total', 0)) for industry in xml_data.findall('.//industry'))
+    if xml_data is None:
+        return "No contribution data available"
+    
+    industries = xml_data.findall('.//industry')
+    total_contributions = sum(safe_int(industry.get('total', '0')) for industry in industries)
     if total_contributions == 0:
         return "No contribution data available"
-
-    senator_contributions = []
-    for industry in xml_data.findall('.//industry'):
-        industry_name = industry.get('industry_name')
-        total = int(industry.get('total', 0))
-        percentage = (total / total_contributions) * 100 if total_contributions > 0 else 0
-        senator_contributions.append(f"{industry_name}: {round(percentage, 2)}%")
-
-    formatted_contributions = ', '.join(senator_contributions) + f". Total Contributions: ${total_contributions}"
+    
+    formatted_contributions = ', '.join(
+        f"{industry.get('industry_name', 'N/A')}: {round(safe_int(industry.get('total', '0')) * 100 / total_contributions, 2)}%"
+        for industry in industries
+    ) + f". Total Contributions: ${total_contributions}"
+    
     return formatted_contributions
+
 
 def process_cand_contrib_data(xml_data):
     if xml_data is None:
@@ -145,3 +158,56 @@ def process_cand_sector_data(xml_data):
     return sectors_list
 
 
+def process_mempfdprofile_data(xml_data):
+    if xml_data is None:
+        return {"error": "No financial profile data available"}
+
+    profile = xml_data.find('.//member_profile')
+    if profile is None:
+        return {"error": "Financial profile data not found"}
+
+    # Extracting asset details
+    assets = [{
+        'name': asset.get('name', 'N/A'),
+        'holdings_low': safe_int(asset.get('holdings_low', '0'), 'N/A'),
+        'holdings_high': safe_int(asset.get('holdings_high', '0'), 'N/A'),
+        'industry': asset.get('industry', 'N/A'),
+        'sector': asset.get('sector', 'N/A'),
+        'subsidiary_of': asset.get('subsidiary_of', 'N/A')
+    } for asset in profile.findall('.//asset')]
+
+    # Extracting transaction details
+    transactions = [{
+        'asset_name': transaction.get('asset_name', 'N/A'),
+        'tx_date': transaction.get('tx_date', 'N/A'),
+        'tx_action': transaction.get('tx_action', 'N/A'),
+        'value_low': safe_int(transaction.get('value_low', '0'), 'N/A'),
+        'value_high': safe_int(transaction.get('value_high', '0'), 'N/A')
+    } for transaction in profile.findall('.//transaction')]
+
+    # Extracting position details
+    positions = [{
+        'title': position.get('title', 'N/A'),
+        'organization': position.get('organization', 'N/A')
+    } for position in profile.findall('.//position')]
+
+    # Compiling the complete financial profile
+    financial_profile = {
+        'name': profile.get('name', 'N/A'),
+        'member_id': profile.get('member_id', 'N/A'),
+        'net_low': safe_int(profile.get('net_low', '0'), 'N/A'),
+        'net_high': safe_int(profile.get('net_high', '0'), 'N/A'),
+        'positions_held_count': safe_int(profile.get('positions_held_count', '0'), 'N/A'),
+        'asset_count': safe_int(profile.get('asset_count', '0'), 'N/A'),
+        'asset_low': safe_int(profile.get('asset_low', '0'), 'N/A'),
+        'asset_high': safe_int(profile.get('asset_high', '0'), 'N/A'),
+        'transaction_count': safe_int(profile.get('transaction_count', '0'), 'N/A'),
+        'tx_low': safe_int(profile.get('tx_low', '0'), 'N/A'),
+        'tx_high': safe_int(profile.get('tx_high', '0'), 'N/A'),
+        'update_timestamp': profile.get('update_timestamp', 'N/A'),
+        'assets': assets,
+        'transactions': transactions,
+        'positions': positions
+    }
+
+    return financial_profile

@@ -28,6 +28,11 @@ def get_cand_sector_data(candidate_id, cycle):
     url = f"https://www.opensecrets.org/api/?method=candSector&cid={candidate_id}&cycle={cycle}&apikey={API_KEY}&output=xml"
     return make_request(url)
 
+def get_memPFDprofile(cid, year="2016"):
+    url = f"http://www.opensecrets.org/api/?method=memPFDprofile&year={year}&cid={cid}&output=xml&apikey={API_KEY}"
+    return make_request(url)
+
+
 
 def make_request(url):
     try:

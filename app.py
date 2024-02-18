@@ -40,6 +40,11 @@ def index():
             cand_sector_xml_data = api_handler.get_cand_sector_data(cid, "2020")
             formatted_cand_sector = data_processor.process_cand_sector_data(cand_sector_xml_data) if cand_sector_xml_data else []
 
+            # Fetching and processing memPFDprofile data
+            mempfdprofile_xml_data = api_handler.get_memPFDprofile(cid, "2016")
+            formatted_mempfdprofile = data_processor.process_mempfdprofile_data(mempfdprofile_xml_data) if mempfdprofile_xml_data else {"error": "No financial profile data available"}
+
+            # Adding legislator data, including memPFDprofile
             legislators_data[senator_name] = {
                 "party": party,
                 "congress_office": congress_office,
@@ -50,7 +55,8 @@ def index():
                 "contributions": formatted_contributions,
                 "contributors": formatted_contributors,
                 "cand_summary": formatted_cand_summary,
-                "sectors": formatted_cand_sector  # Include formatted sector data
+                "sectors": formatted_cand_sector,
+                "memPFDprofile": formatted_mempfdprofile  # Include formatted memPFDprofile data
             }
 
     return render_template('index.html', legislators=legislators_data, independent_expenditures=independent_expenditures)
