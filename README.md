@@ -16,7 +16,7 @@ This was originally a project to help me learn and understand XML parsing. Senat
 - **Educational Resource:** An invaluable tool for educators, journalists, researchers, and politically engaged citizens seeking to understand the financial forces shaping congressional legislation.
 
 ## Usage
-SenateShowdownz is designed with accessibility in mind. Simply select a state from the directory to view a comprehensive breakdown of their funding sources. Our intuitive interface allows for easy navigation and comparison between different senators' financial backers.
+SenateShowdownz is designed with accessibility in mind. Simply select a state from the directory to view a comprehensive breakdown of their funding sources. The intuitive interface allows for easy navigation and comparison between different senators' financial backers.
 
 ## Disclaimer
 SenateShowdownz is intended for educational and recreational purposes only. The platform is a tool to display publicly available financial data related to political campaigns. We are committed to ensuring the accuracy and timeliness of the information provided but do not endorse any political views or campaigns.
